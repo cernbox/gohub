@@ -2,7 +2,10 @@ package gologger
 
 import (
 	"fmt"
+	"net/http"
+	"os"
 
+	"github.com/gorilla/handlers"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -24,4 +27,23 @@ func New(level string, outputPaths ...string) *zap.Logger {
 		panic(err)
 	}
 	return logger
+}
+
+// GetLoggedHTTPHandler wraps the provided http.Handlers with Apache logging information.
+func GetLoggedHTTPHandler(filename string, h http.Handler) http.Handler {
+	var file *os.File
+	if filename == "stderr" {
+		file = os.Stderr
+	}
+	if filename == "stdout" {
+		file = os.Stdout
+	}
+
+	fd, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(fmt.Errorf("error creating file: %s", err.Error()))
+	}
+	file = fd
+
+	return handlers.LoggingHandler(file, h)
 }
