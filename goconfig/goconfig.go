@@ -10,7 +10,9 @@ import (
 )
 
 // GoConfig hold the configuration.
-type GoConfig struct{}
+type GoConfig struct {
+	flagsBinded bool
+}
 
 // New creates a new Config.
 func New() *GoConfig {
@@ -23,6 +25,7 @@ func New() *GoConfig {
 	// add default flags
 	gc.addFlag("show-config", false, "prints the configuration")
 	gc.addFlag("show-config", false, "prints the configuration with resolution steps")
+	gc.addFlag("config-file", "", "configuration file to use")
 
 	return gc
 }
@@ -87,9 +90,15 @@ func (c *GoConfig) BindFlags() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
+	c.flagsBinded = true
 }
 
 // ReadConfig reads the configuration.
 func (c *GoConfig) ReadConfig() error {
+	if c.flagsBinded {
+		if viper.GetString("config-file") != "" {
+			viper.SetConfigFile(viper.GetString("config-file"))
+		}
+	}
 	return viper.ReadInConfig()
 }
