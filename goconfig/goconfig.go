@@ -84,8 +84,8 @@ func (c *GoConfig) GetFloat64(key string) float64 {
 }
 
 func (c *GoConfig) mustExists(key string) {
-	if viper.InConfig(key) {
-		panic(fmt.Errorf("key %s has not been added"))
+	if !viper.IsSet(key) {
+		panic(fmt.Errorf("key %s has not been added", key))
 	}
 }
 
