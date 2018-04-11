@@ -53,24 +53,39 @@ func (c *GoConfig) Add(key string, defaultValue interface{}, usage string) {
 	c.addFlag(key, defaultValue, usage)
 }
 
-func (c *GoConfig) addFlag(key string, defaultValue interface{}, usage string) {
-	switch defaultValue.(type) {
-	case int:
-		flag.Int(key, defaultValue.(int), usage)
-	case int64:
-		flag.Int64(key, defaultValue.(int64), usage)
-	case uint:
-		flag.Uint(key, defaultValue.(uint), usage)
-	case uint64:
-		flag.Uint64(key, defaultValue.(uint64), usage)
-	case string:
-		flag.String(key, defaultValue.(string), usage)
-	case float64:
-		flag.Float64(key, defaultValue.(float64), usage)
-	case bool:
-		flag.Bool(key, defaultValue.(bool), usage)
-	default:
-		panic(fmt.Errorf("unknow type:%T for value:%#v", defaultValue, defaultValue))
+// GetString gets the value as a string.
+func (c *GoConfig) GetString(key string) string {
+	c.mustExists(key)
+	return viper.GetString(key)
+}
+
+// GetInt gets the value as a int.
+func (c *GoConfig) GetInt(key string) int {
+	c.mustExists(key)
+	return viper.GetInt(key)
+}
+
+// GetInt64 gets the value as int64.
+func (c *GoConfig) GetInt64(key string) int64 {
+	c.mustExists(key)
+	return viper.GetInt64(key)
+}
+
+// GetBool gets the value as bool.
+func (c *GoConfig) GetBool(key string) bool {
+	c.mustExists(key)
+	return viper.GetBool(key)
+}
+
+// GetFloat64 gets the value as float64.
+func (c *GoConfig) GetFloat64(key string) float64 {
+	c.mustExists(key)
+	return viper.GetFloat64(key)
+}
+
+func (c *GoConfig) mustExists(key string) {
+	if viper.InConfig(key) {
+		panic(fmt.Errorf("key %s has not been added"))
 	}
 }
 
@@ -119,5 +134,23 @@ func (c *GoConfig) executeActionFlagsIfAny() {
 	if viper.GetBool("show-config-debug") {
 		c.PrintDebugConfig()
 		os.Exit(1)
+	}
+}
+
+func (c *GoConfig) addFlag(key string, defaultValue interface{}, usage string) {
+	switch defaultValue.(type) {
+	case int:
+		flag.Int(key, defaultValue.(int), usage)
+	case int64:
+		flag.Int64(key, defaultValue.(int64), usage)
+		flag.Uint64(key, defaultValue.(uint64), usage)
+	case string:
+		flag.String(key, defaultValue.(string), usage)
+	case float64:
+		flag.Float64(key, defaultValue.(float64), usage)
+	case bool:
+		flag.Bool(key, defaultValue.(bool), usage)
+	default:
+		panic(fmt.Errorf("unknow type:%T for value:%#v", defaultValue, defaultValue))
 	}
 }
