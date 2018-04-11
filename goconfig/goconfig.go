@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -100,5 +101,23 @@ func (c *GoConfig) ReadConfig() error {
 			viper.SetConfigFile(viper.GetString("config-file"))
 		}
 	}
-	return viper.ReadInConfig()
+	err := viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+
+	c.executeActionFlagsIfAny()
+	return nil
+}
+
+func (c *GoConfig) executeActionFlagsIfAny() {
+	if viper.GetBool("show-config") {
+		c.PrintConfig()
+		os.Exit(1)
+	}
+
+	if viper.GetBool("show-config-debug") {
+		c.PrintDebugConfig()
+		os.Exit(1)
+	}
 }
