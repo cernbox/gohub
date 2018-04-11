@@ -25,7 +25,7 @@ func New() *GoConfig {
 
 	// add default flags
 	gc.addFlag("show-config", false, "prints the configuration")
-	gc.addFlag("show-config", false, "prints the configuration with resolution steps")
+	gc.addFlag("show-config-debug", false, "prints the configuration with resolution steps")
 	gc.addFlag("config-file", "", "configuration file to use")
 
 	return gc
