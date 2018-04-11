@@ -110,7 +110,7 @@ func (c *GoConfig) BindFlags() {
 }
 
 // ReadConfig reads the configuration.
-func (c *GoConfig) ReadConfig() error {
+func (c *GoConfig) ReadConfig() {
 	if c.flagsBinded {
 		if viper.GetString("config-file") != "" {
 			viper.SetConfigFile(viper.GetString("config-file"))
@@ -118,11 +118,10 @@ func (c *GoConfig) ReadConfig() error {
 	}
 	err := viper.ReadInConfig()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	c.executeActionFlagsIfAny()
-	return nil
 }
 
 func (c *GoConfig) executeActionFlagsIfAny() {
