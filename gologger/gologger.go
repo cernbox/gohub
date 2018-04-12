@@ -34,16 +34,16 @@ func GetLoggedHTTPHandler(filename string, h http.Handler) http.Handler {
 	var file *os.File
 	if filename == "stderr" {
 		file = os.Stderr
-	}
-	if filename == "stdout" {
+	} else if filename == "stdout" {
 		file = os.Stdout
-	}
+	} else {
 
-	fd, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(fmt.Errorf("error creating file: %s", err.Error()))
+		fd, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			panic(fmt.Errorf("error creating file: %s", err.Error()))
+		}
+		file = fd
 	}
-	file = fd
 
 	return handlers.LoggingHandler(file, h)
 }
