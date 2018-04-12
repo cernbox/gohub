@@ -45,5 +45,5 @@ func GetLoggedHTTPHandler(filename string, h http.Handler) http.Handler {
 		file = fd
 	}
 
-	return handlers.LoggingHandler(file, h)
+	return handlers.RecoveryHandler()(handlers.LoggingHandler(file, h))
 }
