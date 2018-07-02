@@ -3,6 +3,7 @@ package gologger
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gorilla/handlers"
@@ -31,6 +32,7 @@ func New(level string, outputPaths ...string) *zap.Logger {
 
 // GetLoggedHTTPHandler wraps the provided http.Handlers with Apache logging information.
 func GetLoggedHTTPHandler(filename string, h http.Handler) http.Handler {
+	// initialize logging writer
 	var file *os.File
 	if filename == "stderr" {
 		file = os.Stderr
@@ -44,6 +46,14 @@ func GetLoggedHTTPHandler(filename string, h http.Handler) http.Handler {
 		}
 		file = fd
 	}
+	return injectBasicAuthLogging(handlers.RecoveryHandler()(handlers.LoggingHandler(file, h)))
+}
 
-	return handlers.RecoveryHandler()(handlers.LoggingHandler(file, h))
+func injectBasicAuthLogging(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// inject the Basic Auth username into the url info for mux to log users
+		username, _, _ := r.BasicAuth()
+		r.URL.User = url.User(username)
+		h.ServeHTTP(w, r)
+	})
 }
