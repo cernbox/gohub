@@ -20,6 +20,10 @@ func New(level string, outputPaths ...string) *zap.Logger {
 	}
 
 	config := zap.NewProductionConfig()
+	encoderCfg := zap.NewProductionEncoderConfig()
+	encoderCfg.TimeKey = "timestamp"
+	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+	config.EncoderConfig = encoderCfg
 	config.Level = zap.NewAtomicLevelAt(logLevel)
 	config.OutputPaths = outputPaths
 
