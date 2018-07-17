@@ -39,6 +39,10 @@ func New(level string, outputPaths ...string) *zap.Logger {
 	if err != nil {
 		panic(err)
 	}
+
+	// redirect native logger output to zap
+	zap.RedirectStdLog(logger)
+
 	return logger
 }
 
