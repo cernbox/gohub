@@ -240,6 +240,11 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 	buf = append(buf, strconv.Itoa(status)...)
 	buf = append(buf, " "...)
 	buf = append(buf, strconv.Itoa(size)...)
+	buf = append(buf, ` "`...)
+	buf = appendQuoted(buf, req.Referer())
+	buf = append(buf, `" "`...)
+	buf = appendQuoted(buf, req.UserAgent())
+	buf = append(buf, '"', '\n')
 	return buf
 }
 
