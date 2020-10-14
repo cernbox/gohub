@@ -244,7 +244,7 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 	buf = appendQuoted(buf, req.Referer())
 	buf = append(buf, `" "`...)
 	buf = appendQuoted(buf, req.UserAgent())
-	buf = append(buf, '"', '\n')
+	buf = append(buf, `"`...)
 	return buf
 }
 
